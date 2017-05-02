@@ -265,7 +265,7 @@ void GPIO_setOutputLowOnPin(uint8_t selectedPort,
     HWREG16(baseAddress + OFS_PAOUT) &= ~selectedPins;
 }
 
-void gpio_setPinHigh(uint8_t selectedPort,
+void GPIO_toggleOutputOnPin(uint8_t selectedPort,
                             uint16_t selectedPins) {
     uint16_t baseAddress = GPIO_PORT_TO_BASE[selectedPort];
 
