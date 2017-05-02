@@ -29,7 +29,7 @@ clkInit()
 **  \n Uses on board XT2 (4Mhz) as a refrence for both clocks.
 **/
 
-    PMM_setVCore(PMM_CORE_LEVEL_2);
+    PMM_setVCore(PMM_CORE_LEVEL_3);
 
     UCS_setExternalClockSource(
         LF_CRYSTAL_FREQUENCY_IN_HZ,                                         // XT1CLK input

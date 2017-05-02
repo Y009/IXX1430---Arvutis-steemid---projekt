@@ -16,7 +16,7 @@
 
     //!TODO! possibly needs to be changed
 //***** Defines ***************************************************************
-#define MCLK_DESIRED_FREQUENCY  16000                /**< desired clock frequency in Khz */
+#define MCLK_DESIRED_FREQUENCY  25000                /**< desired clock frequency in Khz */
 #define MCLK_FLLREF_RATIO              MCLK_DESIRED_FREQUENCY / 4000    /**< Ratio of desired clock frequency to refrence clock frequency */
 
 

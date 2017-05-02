@@ -15,15 +15,21 @@ gpio_init()
 /** Initializes the used pins on the board.
 **/
 {
-    //!TODO! Figure out pins for shiftreg.
-    P2DIR |= GPIO_PIN2;              // clock for shiftreg
-    P2SEL |= GPIO_PIN2;              /* clock set */
-    GPIO_setAsOutputPin (GPIO_PORT_P6, GPIO_PIN6);     /* Pin 6.6 as serial data output for shiftreg */
-    GPIO_setAsOutputPin (GPIO_PORT_P3, GPIO_PIN2);     /* Pin 3.2 as strobe input for shiftreg*/
+    GPIO_setAsOutputPin (GPIO_PORT_P6, GPIO_PIN6);     /* Pin 6.6 as row serial data output for shiftreg */
+    GPIO_setAsOutputPin (GPIO_PORT_P6, GPIO_PIN3);     /* Pin 6.3 as column serial data output for shiftreg */
+
+    GPIO_setAsOutputPin (GPIO_PORT_P3, GPIO_PIN2);     /* Pin 3.2 as strobe input for shiftreg 1*/
+    GPIO_setAsOutputPin (GPIO_PORT_P3, GPIO_PIN3);     /* Pin 3.3 as strobe input for shiftreg 2*/
+    GPIO_setAsOutputPin (GPIO_PORT_P3, GPIO_PIN0);     /* Pin 3.0 as strobe input for shiftreg 3*/
+    GPIO_setAsOutputPin (GPIO_PORT_P3, GPIO_PIN1);     /* Pin 3.1 as strobe input for shiftreg 4*/
+
+    GPIO_setAsOutputPin (GPIO_PORT_P3, GPIO_PIN4);     /* Pin 3.4 as output enable for all shiftregisters*/
+
+    GPIO_setAsOutputPin (GPIO_PORT_P2, GPIO_PIN2);     /* Pin 2.2 as  clock for shiftreg */
 
     // use actual offboard buttons (if so, change btn cnfg)?
     GPIO_setAsInputPinWithPullUpResistor (GPIO_PORT_P1, GPIO_PIN1);     /* Pin 1.1 as Input for on board button */
-    //GPIO_setAsInputPinWithPullUpResistor (GPIO_PORT_P2, GPIO_PIN1);     /* Pin 2.1 as Input for on board button */
+    GPIO_setAsInputPinWithPullUpResistor (GPIO_PORT_P2, GPIO_PIN1);     /* Pin 2.1 as Input for on board button */
 
 
 }
