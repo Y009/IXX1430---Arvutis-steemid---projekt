@@ -9,7 +9,7 @@
 **  \brief Documentation for the timer module.
 **
 **  Describes the workings of the timer module.
-**  Is used to debounce a button press.
+**  Is used to delay game logic, to make it playable.
 **/
 
 //***** Header Files **********************************************************
@@ -18,12 +18,8 @@
 
 //***** DEFINES ***************************************************************
 
-    //!TODO! find faster rate based on new clk
-
-#define TIMETO 0x1F40                           /**< 0.5 ms cycle for timer A. Calculated with 16MHz SMCLK with divider 1 */
+#define TIMETO 0x9C4                            /**< 0.1 s cycle for timer A. Calculated with 25MHz SMCLK with divider 1 */
 unsigned long long int interruptCounter;        /**< Times the timer A interrupt has to taken place */
-
-short timerFlag = 0 ;                           /**< Flag to check whether an interrupt has occured or not. */
 
 /*********************************************************/
 void
@@ -33,8 +29,8 @@ timer_init(void)
 {
     Timer_A_initUpModeParam initUpParam = { 0 };
         initUpParam.clockSource = TIMER_A_CLOCKSOURCE_SMCLK;                      /* Use SMCLK (faster clock) */
-        initUpParam.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_1;           /* Input clock = SMCLK / 1 = 16MHz */
-        initUpParam.timerPeriod = TIMETO;                                         /* 0.5ms */
+        initUpParam.clockSourceDivider = TIMER_A_CLOCKSOURCE_DIVIDER_1;           /* Input clock = SMCLK / 1 = 25MHz */
+        initUpParam.timerPeriod = TIMETO;                                         /* 0.1 s */
         initUpParam.timerInterruptEnable_TAIE = TIMER_A_TAIE_INTERRUPT_ENABLE;    /* Enable TAR -> 0 interrupt */
         initUpParam.captureCompareInterruptEnable_CCR0_CCIE =
                 TIMER_A_CCIE_CCR0_INTERRUPT_ENABLE;                               /* Enable CCR0 compare interrupt */
@@ -57,24 +53,6 @@ timer_init(void)
 }
 
 /*********************************************************/
-void
-timer_checkFlag()
-/** Checks whether there has been a timer interrupt and increments a counter if so.
-**
-**  Is called from application level in every cycle.
-**  timerFlag is set to true whenever a timer A interrupt has occurred.
-**  Is used to get a delay of TIMETO * interruptCounter.
-**/
-{
-    timer_diTAI(timer_timerBase);
-    if(timerFlag){
-        interruptCounter++;
-        timerFlag = 0;                  /* Clear timerA interrupt up flag */
-    }
-    timer_enTAI(timer_timerBase);
-}
-
-/*********************************************************/
 int
 timer_getCounter(void)
 /** Get timerA's interruptCounter.
@@ -91,12 +69,12 @@ timer_getCounter(void)
 #pragma vector=TIMER0_A0_VECTOR         /*< Interrupt vector pragma for timerA0. */
 __interrupt
 void
-timer_debouncingBtn (void)
+timer_delay (void)
 /** Interrupt vector for timerA0.
 **
 **  Is triggered when the timerA's value reaches TIMETO and resets back to 0.
 **/
 {
-    timerFlag = 1;
+    interruptCounter++;
     Timer_A_clearTimerInterrupt(timer_timerBase);                                       /* Clear TA0IFG */
 }

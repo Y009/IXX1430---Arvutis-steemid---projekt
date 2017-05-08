@@ -9,6 +9,8 @@
 #define LOGIC_H_
 
 
+void logic_init();
+void logic_cyclic();
 
 
 

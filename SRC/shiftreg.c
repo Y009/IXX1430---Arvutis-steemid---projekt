@@ -12,104 +12,6 @@
 
 #define TRUE 1
 #define FALSE 0
-#define SIZEOFMATR 16
-#define SIZEOFRAWMATR 14
-#define SIZEOFRAWMATR2 10
-#define STARTPOS
-
-//test matrices
-/*
-unsigned int data [SIZEOFMATR][SIZEOFMATR] = {
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},//0
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0}, //7
-
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {1, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {1, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-
-      {1, 1,1,0,0,0,0,1, 0, 1,1,1,0,0,0,0}, //5,6,7,13,14,15, on fyysiliselt v2lja j22vad read
-      {1, 0,0,1,1,0,0,1, 0, 1,0,0,1,0,1,0},
-      {0, 1,0,1,0,1,0,1, 1, 0,1,0,1,1,0,1}  //15
-};  // col 1,8 j22b samuti v2lja
-*/
-
-unsigned int data [SIZEOFMATR][SIZEOFMATR] = {
-      {0, 0,0,0,0,1,0,0, 0, 0,0,0,0,0,0,1}, //0
-      {0, 0,0,0,1,0,1,0, 0, 0,0,0,0,0,1,0},
-      {0, 0,0,1,0,0,0,1, 0, 1,0,0,0,1,0,0},
-      {0, 0,1,0,0,0,0,0, 0, 0,1,0,1,0,0,0},
-      {0, 1,0,0,0,0,0,0, 0, 0,0,1,0,0,0,1},
-
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0}, //7
-
-      {0, 0,0,0,0,1,0,0, 0, 0,0,0,0,0,0,1},
-      {0, 0,0,0,1,0,1,0, 0, 0,0,0,0,0,1,0},
-      {0, 0,0,1,0,0,0,1, 0, 1,0,0,0,1,0,0},
-      {0, 0,1,0,0,0,0,0, 0, 0,1,0,1,0,0,0},
-      {1, 1,0,0,0,0,0,0, 0, 0,0,1,0,0,0,1},
-
-      {1, 1,1,0,0,0,0,1, 0, 1,1,1,0,0,0,0}, //5,6,7,13,14,15, on fyysiliselt v2lja j22vad read
-      {1, 0,0,1,1,0,0,1, 0, 1,0,0,1,0,1,0},
-      {0, 1,0,1,0,1,0,1, 1, 0,1,0,1,1,0,1}  //15
-};  // col 1,8 j22b samuti v2lja
-/*
-unsigned int data [SIZEOFMATR][SIZEOFMATR] = {
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},//0
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
-      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0}, //7
-
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {1, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-      {1, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
-
-      {1, 1,1,0,0,0,0,1, 0, 1,1,1,0,0,0,0}, //5,6,7,13,14,15, on fyysiliselt v2lja j22vad read
-      {1, 0,0,1,1,0,0,1, 0, 1,0,0,1,0,1,0},
-      {0, 1,0,1,0,1,0,1, 1, 0,1,0,1,1,0,1}  //15
-};  // col 1,8 j22b samuti v2lja
-*/
-
-//rawData from LED controller to be converted to a usable format for shiftregister (16x16)
-unsigned int rawData [SIZEOFRAWMATR2][SIZEOFRAWMATR] = {
-    {0,1,1,1,1,1,0, 0,0,1,0,1,1,0},
-    {0,0,1,1,1,0,0, 0,0,1,1,1,0,0},
-    {0,0,0,1,1,0,1, 0,1,0,0,0,1,0},
-    {0,0,0,0,1,0,0, 1,0,0,0,0,0,1},
-    {1,1,1,1,1,1,1, 0,0,0,0,0,0,0},
-
-    {0,1,1,1,1,0,1, 0,0,1,0,1,1,0},
-    {1,0,1,0,1,0,1, 1,0,0,0,0,1,1},
-    {0,0,0,0,1,0,1, 0,0,1,0,0,1,0},
-    {0,0,0,0,1,0,1, 1,0,1,0,0,1,1},
-    {1,1,1,0,1,0,1, 0,0,1,1,0,1,0}
-};
-
-int row;
-int column;
-unsigned int element;
-unsigned int i = 0;
-unsigned int j = 0;
-unsigned int lastBufferPos;         /* Used to indicate what point in matrix to display */
-//unsigned int data [SIZEOFMATR][SIZEOFMATR];
-//unsigned int rawData [][];
 
 void clearRowData();
 void shiftThroughRows();
@@ -136,10 +38,110 @@ void dis_shiftreg4();
 void en_output();
 void dis_output();
 
-void shiftreg_init()
+//test matrices
+/*
+unsigned int data [SIZEOFMATR][SIZEOFMATR] = {
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},//0
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0}, //7
+
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {1, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {1, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+
+      {1, 1,1,0,0,0,0,1, 0, 1,1,1,0,0,0,0}, //5,6,7,13,14,15, on fyysiliselt v2lja j22vad read
+      {1, 0,0,1,1,0,0,1, 0, 1,0,0,1,0,1,0},
+      {0, 1,0,1,0,1,0,1, 1, 0,1,0,1,1,0,1}  //15
+};  // col 1,8 j22b samuti v2lja
+*/
+/*
+unsigned int data [SIZEOFMATR][SIZEOFMATR] = {
+      {0, 0,0,0,0,1,0,0, 0, 0,0,0,0,0,0,1}, //0
+      {0, 0,0,0,1,0,1,0, 0, 0,0,0,0,0,1,0},
+      {0, 0,0,1,0,0,0,1, 0, 1,0,0,0,1,0,0},
+      {0, 0,1,0,0,0,0,0, 0, 0,1,0,1,0,0,0},
+      {0, 1,0,0,0,0,0,0, 0, 0,0,1,0,0,0,1},
+
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0}, //7
+
+      {0, 0,0,0,0,1,0,0, 0, 0,0,0,0,0,0,1},
+      {0, 0,0,0,1,0,1,0, 0, 0,0,0,0,0,1,0},
+      {0, 0,0,1,0,0,0,1, 0, 1,0,0,0,1,0,0},
+      {0, 0,1,0,0,0,0,0, 0, 0,1,0,1,0,0,0},
+      {1, 1,0,0,0,0,0,0, 0, 0,0,1,0,0,0,1},
+
+      {1, 1,1,0,0,0,0,1, 0, 1,1,1,0,0,0,0}, //5,6,7,13,14,15, on fyysiliselt v2lja j22vad read
+      {1, 0,0,1,1,0,0,1, 0, 1,0,0,1,0,1,0},
+      {0, 1,0,1,0,1,0,1, 1, 0,1,0,1,1,0,1}  //15
+};  */// col 1,8 j22b samuti v2lja
+/*
+unsigned int data [SIZEOFMATR][SIZEOFMATR] = {
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},//0
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0},
+      {0, 0,0,0,0,0,0,0, 0, 0,0,0,0,0,0,0}, //7
+
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {0, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {1, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+      {1, 1,1,1,1,1,1,1, 0, 1,1,1,1,1,1,1},
+
+      {1, 1,1,0,0,0,0,1, 0, 1,1,1,0,0,0,0}, //5,6,7,13,14,15, on fyysiliselt v2lja j22vad read
+      {1, 0,0,1,1,0,0,1, 0, 1,0,0,1,0,1,0},
+      {0, 1,0,1,0,1,0,1, 1, 0,1,0,1,1,0,1}  //15
+};  // col 1,8 j22b samuti v2lja
+*/
+
+//rawData from LED controller to be converted to a usable format for shiftregister (16x16)
+/*
+unsigned int rawData [SIZEOFRAWMATR2][SIZEOFRAWMATR] = {
+                                                        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                                                        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                                                        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                                                        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                                                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                                                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                                                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                                                        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                                                        {0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0},
+                                                        {0, 0, 0, 0, 0, 11,12,13,14,0, 0, 0, 0, 0}
+};
+*/
+int row;
+int column;
+unsigned int newData;
+unsigned int element;
+unsigned int i;
+unsigned int j;
+unsigned int lastBufferPos;         /* Used to indicate what point in matrix to display */
+unsigned int data [SIZEOFMATR][SIZEOFMATR];
+unsigned int rawData [SIZEOFRAWMATR2][SIZEOFRAWMATR];
+
+
+
+void
+shiftreg_init()
 {
     //clearing all matrices
-    gpio_init();
+    i = 0;
+    j = 0;
+    newData = FALSE;
     clearRowData();
     en_shiftreg1();
     en_shiftreg2();
@@ -158,39 +160,16 @@ void shiftreg_init()
 void
 shiftreg_exec()
 {
-    if (! GPIO_getInputPinValue(GPIO_PORT_P2, GPIO_PIN1))
-    {
-        /*
-        en_shiftreg1();
-        en_shiftreg2();
-        outputRow();
-        dis_shiftreg1();
-        dis_shiftreg2();
-        */
-        printf("\n");
-        for (i = 0 ; i < SIZEOFRAWMATR2 ; i++)
-        {
-            for(j = 0 ; j < SIZEOFRAWMATR ; j++)
-            {
-                printf("%d ", rawData [i][j]);
-            }
-            printf("\n");
-        }
-        printf("new matr \n");
-        printf("\n");
+    if (newData)
         convertMatr();
-        for (i = 0 ; i < SIZEOFMATR ; i++)
-        {
-            for(j = 0 ; j < SIZEOFMATR ; j++)
-            {
-                printf("%d ", data [i][j]);
-            }
-            printf("\n");
-        }
-    }
 
-    if (! GPIO_getInputPinValue(GPIO_PORT_P1, GPIO_PIN1))
-    {
+//    if (! GPIO_getInputPinValue(GPIO_PORT_P2, GPIO_PIN1))
+//    {
+//        convertMatr();
+//    }
+
+//    if (! GPIO_getInputPinValue(GPIO_PORT_P1, GPIO_PIN1))
+//    {
         if(lastBufferPos == 0)
         {
             lastBufferPos = SIZEOFMATR;
@@ -199,13 +178,14 @@ shiftreg_exec()
         outputBuffer(lastBufferPos);
         shiftThroughRows();
         lastBufferPos--;
-    }
+//    }
 }
 
 void
 clearRowData()
 /*
  * clearing all row data causing all leds to go to OFF state
+ * and be ready for new data to be displayed.
  */
 {
     for(i = 0; i < SIZEOFMATR;  i++)
@@ -233,7 +213,6 @@ shiftThroughRows()
     for(i = (SIZEOFMATR - lastBufferPos); i > 0;  i--)
     {
        outputRowNull();
-       //__delay_cycles(100000U);
     }
 
     en_shiftreg1();
@@ -245,10 +224,13 @@ shiftThroughRows()
 
 void
 outputBuffer(unsigned int bufferPos)
+/*
+ * Sends the current column value of the data matrix to the shiftregisters, based on the bufferPos index.
+ *
+ */
 {
     for (row = SIZEOFMATR-1;row >= 0; row--)
     {
-
         if (data[row][bufferPos-1] == TRUE)
             outputCol();
         else
@@ -259,31 +241,56 @@ outputBuffer(unsigned int bufferPos)
 
 void
 convertMatr()
+/*
+ * As the higher level operates with a matrix with the size of 14x10
+ * it is necessary to convert it to a 16x16 matrix because the shiftregisters have 8 outputs
+ * and this function skips over the rows and columns that do not get displayed on the physical LEDs.
+ *
+ */
 {
-    int veerg = 0 ; // helping variables to allow conversion between matrices
-    int rida = 0;
+    int column = 0 ;                        // helping variables to allow conversion between matrices
+    int row = 0;
 
     for (i = 0 ; i < SIZEOFRAWMATR2; i++)
     {
         if (i == (SIZEOFRAWMATR2 / 2))
-            rida = rida + 4; // increment + number of unused rows
+            row = row + 4;                  // increment + number of unused rows
         else if (i == 0 )
             ;
         else
-            rida = rida + 1;
+            row++;
 
         for (j = 0 ; j < SIZEOFRAWMATR; j++)
         {
             if (j == (SIZEOFRAWMATR / 2))
-                veerg = veerg + 2; // increment + number of unused columns
-                veerg = veerg + 1;
-            data [rida][veerg] = rawData[i][j];
+                column = column + 2;        // increment + number of unused columns
+            else
+                column++;
+            if (rawData[i][j])
+                data [row][column] = TRUE;
+            else
+                data [row][column] = FALSE;
         }
-        veerg = 0;
+        column = 0;
     }
+    newData = FALSE;
 }
 
-
+void
+shiftreg_set_newMatr(unsigned int transfer [SIZEOFRAWMATR2][SIZEOFRAWMATR])
+/*
+ * Public function to allow LED controller to give data about what to display.
+ */
+{
+    for(i = 0; i < SIZEOFRAWMATR2; i++)
+    {
+        for(j = 0; j < SIZEOFRAWMATR; j++)
+        {
+            rawData[i][j] = transfer[i][j];
+        }
+    }
+    newData = TRUE;
+}
 
 void
 outputRow()
@@ -346,13 +353,13 @@ colDataLow()
 void
 clockUp()
 {
-    gpio_setPinHigh(gpio_PORT_P2, gpio_PIN2);
+    gpio_setPinHigh(gpio_PORT_P2, gpio_PIN4);
 }
 
 void
 clockDwn()
 {
-    gpio_setPinLow(gpio_PORT_P2, gpio_PIN2);
+    gpio_setPinLow(gpio_PORT_P2, gpio_PIN4);
 }
 
 void

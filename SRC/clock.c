@@ -3,7 +3,7 @@
  *
  *  Created on: 6. okt 2016 (18 Apr 2017)
  *      Author: Karl (Y009)
- *
+ *                  (edited)
  */
 
 /** \file clock.c
@@ -15,7 +15,7 @@
 //***** Header Files **********************************************************
 #include <driverlib.h>
 #include "clock.h"
-    //!TODO! possibly needs to be changed
+#include "stdio.h"
 
 #define LF_CRYSTAL_FREQUENCY_IN_HZ     32768
 #define HF_CRYSTAL_FREQUENCY_IN_HZ     4000000
@@ -36,8 +36,7 @@ clkInit()
         HF_CRYSTAL_FREQUENCY_IN_HZ                                          // XT2CLK input
         );
 
-    UCS_turnOnXT2(UCS_XT2_DRIVE_4MHZ_8MHZ);
-
+    UCS_turnOnXT2WithTimeout(UCS_XT2_DRIVE_4MHZ_8MHZ, 10000);
 
     UCS_initClockSignal(     /*Clock init using DCO/FLL*/
         UCS_FLLREF,
