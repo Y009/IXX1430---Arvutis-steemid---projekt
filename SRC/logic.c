@@ -3,7 +3,6 @@
  *
  *  Created on: 18 Apr 2017
  *      Author: Y009
- *      !TODO: write change dir function and move ball function.
  */
 
 
@@ -11,7 +10,6 @@
 #include <driverlib.h>
 #include "logic.h"
 #include "shiftreg.h"
-#include "stdio.h"
 #include "timer.h"
 
 #define TRUE 1
@@ -44,6 +42,16 @@
 #define BALLDIR6 8
 #define BALLDIR7 12
 
+#define gameResetTime 10000000        /* Changing this modifies the delay before
+                                     * automatically starting a new game
+                                     *
+                                     * !Can still be optimized!
+                                     */
+#define gameTimeModifier 25000      /* This value controls the conversion of the timer's
+                                     * value to a suitable score value.
+                                     *
+                                     * !Can still be optimized!
+                                     */
 void logic_updateLED();
 void logic_movePlatform();
 void movePlatform(unsigned int dir);
@@ -66,10 +74,28 @@ void move_ball_remove();
 void move_ball_reAdd();
 void changeDir();
 int checkpos(unsigned int moveDir);
+void convertTime();
+void missPlatform();
+char checkLastRow();
+void copyPlayField();
 
 
-
-unsigned int playField [SIZEOFRAWMATR2][SIZEOFRAWMATR] = {
+//Default starting playField
+/*
+unsigned int defaultPlayField [SIZEOFRAWMATR2][SIZEOFRAWMATR] = {
+    {0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 11,12,13,14,0, 0, 0, 0, 0}
+};
+*/
+unsigned int defaultPlayField [SIZEOFRAWMATR2][SIZEOFRAWMATR] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -78,58 +104,105 @@ unsigned int playField [SIZEOFRAWMATR2][SIZEOFRAWMATR] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 11,12,13,14,0, 0, 0, 0, 0}
 };
 
+unsigned int playField [SIZEOFRAWMATR2][SIZEOFRAWMATR];
 unsigned int ballDir;
-unsigned short int ballDirUp;   // ball moving upwards == TRUE;
-unsigned upCounter;             // how much the ball has moved up/down. Used in move_dir functions to know how to move..
-unsigned int platformStatus;    // shows if the platform is in motion. if so then which way
-unsigned int i;                 // used for loops
-unsigned long long int delay = 6000;
-unsigned long long int delay2 = 1000;
-unsigned long long int lastCounter = 0;
-unsigned long long int lastCounter2 = 0;
-int ballPos1;
-int ballPos2;
+unsigned short int ballDirUp;           // ball moving upwards == TRUE;
+unsigned upCounter;                     // how much the ball has moved up/down. Used in move_dir functions to know how to move..
+unsigned int platformStatus;            // shows if the platform is in motion. if so then which way
+unsigned int i;                         // used for loops
+unsigned int j;                         // used for loops
+unsigned long long int delay;           // delay for ball's movement
+unsigned long long int delay2;          // delay for platform's movement
+unsigned long long int lastCounter;     // delaycounter for ball's movement
+unsigned long long int lastCounter2;    // delaycounter for platform's movement
+unsigned long long int gameTime;        // elapsed game time
+unsigned long long int gameTime2;       // difference between game end time and current time
+unsigned int gameOver;                  // gameover status
+unsigned int gameWon;                   // gamewin status
+unsigned int gameOverStatusSet;         // to disable work with gameOver if time has been set
+unsigned int lives;                     // amount of lives the player gets (number of balls to clear the matrix)
+unsigned int platformHit;               // the specific block that the ball hit the platform on
+unsigned int blockCount;                // number of blocks on the playfield
+
+// 3d array to store scores for easy access
+unsigned int scoreNumbers[10][SIZEOFRAWMATR2][SIZEOFRAWMATR /2 ] = {LED0, LED1, LED2, LED3, LED4, LED5, LED6, LED7, LED8, LED9};
+
+int ballPos1;                           // tracking the ball's position; has to be signed for position check
+int ballPos2;                           // tracking the ball's position; has to be signed for position check
 
 unsigned long long int test = 0;
 
 void
 logic_init()
 /**
- * 1st time setup
- *
+ * Setup
  */
 {
-    ballPos1 = 8;   // on what row
-    ballPos2 = 7;   // on what column
+    copyPlayField();
+    ballPos1 = 7;   // on what row
+    ballPos2 = 8;   // on what column   based on default playfield to ease control
+    blockCount = 56;
+
     ballDir = BALLDIR4;
     ballDirUp = TRUE;
     platformStatus = NOTMOVING;
     shiftreg_set_newMatr(playField);
 
+    gameOver = FALSE;
+    gameWon = FALSE;
+    gameOverStatusSet = FALSE;
+    lives = 2;
+
+    delay = 3000;
+    delay2 = 1000;
+    lastCounter = 0;
+    lastCounter2 = 0;
+
+    set_timerCounter();
+
+    timer_init();
+
 }
+
 
 void
 logic_cyclic()
 /**
- * get input, act on it
+ * Get input, act on it
  * see gamelogic.png
- *
  */
 {
-    if(timer_getCounter() - lastCounter >= delay)             // delay with timer to make the game playable
+    if( (timer_getCounter() - lastCounter >= delay ) && (!gameOver) && (!gameWon) )               // delay with timer to make the game playable
     {
         logic_moveBall();
-        //logic_movePlatform();
         lastCounter = timer_getCounter();
-
     }
-    if(timer_getCounter() - lastCounter2 >= delay2)             // delay with timer to make the game playable
+
+    if(gameWon == TRUE)
     {
-        //logic_moveBall();
+        if ( gameOverStatusSet == TRUE)
+        {
+            ;
+        }
+        else
+        {
+            gameTime = timer_getCounter();
+            gameOverStatusSet = TRUE;
+            convertTime();
+            logic_updateLED();
+        }
+    }
+    else if(gameOver == TRUE)
+    {
+        logic_init();                           // Reinitialize the game
+    }
+
+    if( (timer_getCounter() - lastCounter2 >= delay2 ) && !gameOver)             // delay with timer to make the game playable
+    {
         logic_movePlatform();
         lastCounter2 = timer_getCounter();
 
@@ -137,15 +210,62 @@ logic_cyclic()
 }
 
 void
+copyPlayField()
+{
+    for (i = 0 ; i < SIZEOFRAWMATR2; i++)
+    {
+        for (j = 0 ; j < SIZEOFRAWMATR; j++)
+        {
+            playField[i][j] = defaultPlayField[i][j];
+        }
+    }
+}
+
+void
+/*
+ * Convert's the timer's value to usable number.
+ * Time is reduced to a value between 0-99.
+ * To keep the score easily displayable.
+ * Set's the game score/time on the playField matrix
+ */
+convertTime()
+{
+    int number = ((gameTime / gameTimeModifier)/10) % 10 ;
+    int number2 = (gameTime / gameTimeModifier) % 10;
+
+    // Setting the left number
+    for(i = 0; i < SIZEOFRAWMATR2 ; i++)
+    {
+        for(j = 0; j < SIZEOFRAWMATR / 2; j++)
+        {
+
+                playField[i][j] = scoreNumbers[number][i][j];
+
+        }
+    }
+
+    // Setting the right number
+    for(i = 0; i < SIZEOFRAWMATR2 ; i++)
+    {
+        for(j = SIZEOFRAWMATR / 2; j < SIZEOFRAWMATR; j++)                     // continuing from the right side of the matrix
+        {
+            playField[i][j] = scoreNumbers[number2][i][j - SIZEOFRAWMATR / 2]; // Number matrix's value has to be balanced back
+        }
+
+    }
+
+}
+
+void
 logic_movePlatform()
 /**
- * move platform based on input from buttons
- * check if touching wall
+ * Move platform based on input from buttons
+ * Check if touching wall
  */
 {
     if (! GPIO_getInputPinValue(GPIO_PORT_P2, GPIO_PIN1))                               // move left
     {
-        if ( (playField[SIZEOFRAWMATR2 - 1][0])  != PLATFORM1)                          // check last rows 1st element
+        if ( ((playField[SIZEOFRAWMATR2 - 1][0])  != PLATFORM1)  && checkLastRow())                          // check last rows 1st element
         {
             platformStatus = LEFT;
             movePlatform(platformStatus);
@@ -153,17 +273,35 @@ logic_movePlatform()
     }
     else if (! GPIO_getInputPinValue(GPIO_PORT_P1, GPIO_PIN1))                          // move right
     {
-        if ( (playField[SIZEOFRAWMATR2 - 1][ SIZEOFRAWMATR - 1])  != PLATFORM4)         // check last rows last element
+        if ( ( (playField[SIZEOFRAWMATR2 - 1][ SIZEOFRAWMATR - 1])  != PLATFORM4) && checkLastRow() )         // check last rows last element
         {
             platformStatus = RIGHT;
             movePlatform(platformStatus);
         }
     }
-    else if ( (! GPIO_getInputPinValue(GPIO_PORT_P2, GPIO_PIN1)) && (! GPIO_getInputPinValue(GPIO_PORT_P1, GPIO_PIN1)))
+    else
+    {
         platformStatus = NOTMOVING;
+    }
+}
+
+char
+/*
+ * Checks last row for ball
+ */
+checkLastRow()
+{
+
+    if( (ballPos1 + 1) == SIZEOFRAWMATR2)
+        return FALSE;
+
+    return TRUE;
 }
 
 void
+/*
+ * Ball's direction change from blocks and walls.
+ */
 changeDir()
 {
     switch (ballDir)
@@ -195,6 +333,83 @@ changeDir()
     case BALLDIR7:
         ballDir = BALLDIR1;
         break;
+    }
+    upCounter = 0;      // reset upcounter to ensure movement in new direction to be accurate
+}
+
+void
+/*
+ * Ball's direction change according to where it hit the platform
+ * and whether the platform was moving or not.
+ */
+changeDir_Platform()
+{
+    ballDirUp = TRUE;
+
+    if (platformStatus == LEFT)
+    {
+        switch (platformHit)
+        {
+        case PLATFORM1:
+            ballDir = BALLDIR4;
+            break;
+
+        case PLATFORM2:
+            ballDir = BALLDIR5;
+            break;
+
+        case PLATFORM3:
+            ballDir = BALLDIR6;
+            break;
+
+        case PLATFORM4:
+            ballDir = BALLDIR7;
+            break;
+        }
+    }
+
+    else if (platformStatus == RIGHT)
+    {
+        switch (platformHit)
+        {
+        case PLATFORM1:
+            ballDir = BALLDIR1;
+            break;
+
+        case PLATFORM2:
+            ballDir = BALLDIR2;
+            break;
+
+        case PLATFORM3:
+            ballDir = BALLDIR3;
+            break;
+
+        case PLATFORM4:
+            ballDir = BALLDIR4;
+            break;
+        }
+    }
+
+    else if (platformStatus == NOTMOVING)
+    {
+        switch (platformHit)
+        {
+        case PLATFORM1:
+            ballDir = BALLDIR2;
+            break;
+
+        case PLATFORM2:
+            ballDir = BALLDIR3;
+            break;
+
+        case PLATFORM3:
+            ballDir = BALLDIR5;
+            break;
+
+        case PLATFORM4:
+            ballDir = BALLDIR6;
+            break;
+        }
     }
     upCounter = 0;      // reset upcounter to ensure movement in new direction to be accurate
 }
@@ -249,16 +464,19 @@ logic_updateLED()
     shiftreg_set_newMatr(playField);
 }
 
-
 void
+/*
+ * Platform movement on the last row of the playfield
+ * movement is restricted strictly to that rows elements
+ */
 movePlatform(unsigned int dir)
 {
     if (dir == RIGHT)
     {
         for ( i = 3 ; i < SIZEOFRAWMATR ; i++)      /* find the right edge of the platform and move the platform
-                                                    i = 3 to optimize; because the right farthest platform
-                                                    element can never be at index less than 3.
-                                                    */
+                                                     * i = 3 to optimize; because the right farthest platform
+                                                     * element can never be at index less than 3.
+                                                     */
         {
             if (playField[SIZEOFRAWMATR2 - 1][i] == PLATFORM4)
             {
@@ -272,12 +490,12 @@ movePlatform(unsigned int dir)
         }
 
     }
-    else if (dir  == LEFT)                              // as else if just in case it gets here through some error.
+    else if (dir  == LEFT)
     {
-        for ( i = 0 ; i < SIZEOFRAWMATR ; i++)  /* find the left edge of the platform and move the platform
-                                                    SIZEOFRAWMATR -4  to optimize; because the left farthest platform
-                                                    element can never be at index more then than 10.
-                                                    */
+        for ( i = 0 ; i < SIZEOFRAWMATR ; i++)      /* find the left edge of the platform and move the platform
+                                                     * SIZEOFRAWMATR -4  to optimize; because the left farthest platform
+                                                     * element can never be at index more then than 10.
+                                                     */
         {
             if (playField[SIZEOFRAWMATR2 - 1][i] == PLATFORM1)
             {
@@ -296,17 +514,56 @@ movePlatform(unsigned int dir)
 }
 
 void
+/*
+ * Ball misses the platform
+ * Check for lives.
+ * REinit ball if needed
+ */
+missPlatform()
+{
+    if(lives > 0)
+    {                   // reinitialize ball
+        move_ball_remove();
+        ballPos1 = 8;
+        ballPos2 = 7;
+        ballDirUp = TRUE;
+        playField [ballPos1][ballPos2] = BALL;
+        lives--;
+    }
+    else
+    {
+        gameOver = TRUE;
+    }
+}
+
+
+void
 removeBlock(unsigned int row, unsigned int col)
 {
     playField[row][col]--;
+    blockCount--;
+    if(blockCount == 0)
+    {
+        gameWon = TRUE;
+    }
 }
 
 int
+/*
+ * Based on ball's movement path
+ * the next position is checked
+ */
 checkPos(unsigned int moveDir)
 {
+    if ((ballPos1 + 1) ==  SIZEOFRAWMATR2)                              // out of bounds
+    {
+        missPlatform();
+        return 0;
+    }
+
     if (moveDir == UP)
     {
-        if ((ballPos1 - 1) < 0)                               // outer wall
+        if (ballPos1 < 1)                               // outer wall
         {
             changeDir();
             ballDirUp = FALSE;
@@ -317,8 +574,8 @@ checkPos(unsigned int moveDir)
         else if ( playField[ ballPos1 - 1 ][ ballPos2] == BLOCK )
         {
             removeBlock(ballPos1 - 1, ballPos2);
-            changeDir();
             ballDirUp = FALSE;
+            changeDir();
             return 0;
         }
 
@@ -339,20 +596,20 @@ checkPos(unsigned int moveDir)
                  playField[ ballPos1 + 1][ ballPos2 ] == PLATFORM3 ||
                  playField[ ballPos1 + 1][ ballPos2 ] == PLATFORM4  )
         {
-            ballDirUp = TRUE;
-            changeDir();
+            platformHit = playField[ ballPos1 + 1][ ballPos2 ];
+            changeDir_Platform();
             return 0;
         }
-        else if ((ballPos1 + 1) ==  (SIZEOFRAWMATR2 -1))                              // out of bounds
-        {
-            // fucking noob failed.
-            changeDir();
-            ballDirUp = TRUE;
-            //!TODO write function for failure...
-        }
+
     }
     else if (moveDir == UPRIGHT)
     {
+        if (ballPos1 < 1)                               // outer wall
+        {
+            changeDir();
+            ballDirUp = FALSE;
+            return 0;
+        }
         if(playField[ ballPos1 - 1][ ballPos2 + 1 ] == EMPTY)
             return 1;
         else if ( playField[ ballPos1 - 1 ][ ballPos2 + 1] == BLOCK )
@@ -363,7 +620,7 @@ checkPos(unsigned int moveDir)
             return 0;
         }
         else if ((ballPos2 + 1) > (SIZEOFRAWMATR -1))                              // outer wall
-        {                               //!TODO should probably do a check for both up wall and side walls.....
+        {
             changeDir();
             return 0;
         }
@@ -371,6 +628,12 @@ checkPos(unsigned int moveDir)
     }
     else if (moveDir == UPLEFT)
     {
+        if (ballPos1 < 1)                               // outer wall
+        {
+            changeDir();
+            ballDirUp = FALSE;
+            return 0;
+        }
         if(playField[ ballPos1 - 1][ ballPos2 - 1 ] == EMPTY)
             return 1;
         else if ( playField[ ballPos1 - 1 ][ ballPos2 - 1] == BLOCK )
@@ -403,22 +666,15 @@ checkPos(unsigned int moveDir)
                  playField[ ballPos1 + 1][ ballPos2 + 1] == PLATFORM3 ||
                  playField[ ballPos1 + 1][ ballPos2 + 1] == PLATFORM4  )
         {
-            ballDirUp = TRUE;
-            changeDir();
+            platformHit = playField[ ballPos1 + 1][ ballPos2 + 1];
+            changeDir_Platform();
             return 0;
-        }
-        else if ((ballPos1 + 1) ==  (SIZEOFRAWMATR2 -1))                              // out of bounds
-        {
-            // fucking noob failed.
-            changeDir();
-            ballDirUp = TRUE;
-            //!TODO write proper failure function
         }
     }
 
     else if (moveDir == DOWNLEFT)
     {
-        if(playField[ ballPos1 + 1][ ballPos2 - 11 ] == EMPTY)
+        if(playField[ ballPos1 + 1][ ballPos2 - 1 ] == EMPTY)
             return 1;
         else if ( playField[ ballPos1 + 1 ][ ballPos2 - 1] == BLOCK )
         {
@@ -432,13 +688,10 @@ checkPos(unsigned int moveDir)
                  playField[ ballPos1 + 1][ ballPos2 - 1] == PLATFORM3 ||
                  playField[ ballPos1 + 1][ ballPos2 - 1] == PLATFORM4  )
         {
-            ballDirUp = TRUE;
-            changeDir();
+            platformHit = playField[ ballPos1 + 1][ ballPos2 - 1];
+            changeDir_Platform();
             return 0;
         }
-        else if ((ballPos1 + 1) ==  (SIZEOFRAWMATR2 -1))                              // out of bounds
-            ; // fucking noob failed.
-              //!TODO write function for failure...
     }
 
 
@@ -466,7 +719,10 @@ checkPos(unsigned int moveDir)
     return 0;
 }
 
-//
+
+/*
+ * Ball movement path checks
+ */
 void
 move_dir1()
 {
@@ -479,7 +735,7 @@ move_dir1()
     }
     else
     {
-        if(checkPos(UPLEFT) == TRUE)
+        if(checkPos(DOWNLEFT) == TRUE)
         {
             move_ball_downleft();
         }
@@ -685,12 +941,20 @@ move_dir7()
     }
     else
     {
-        if(checkPos(UPRIGHT) == TRUE)
+        if(checkPos(DOWNRIGHT) == TRUE)
         {
             move_ball_downright();
         }
     }
 }
+
+
+/*
+ * Ball's actual movement control
+ * ball is removed from the playfield,
+ * it's new coordinates set then
+ * it's readded to the field.
+ */
 
 void
 move_ball_downright()

@@ -8,9 +8,9 @@
 #ifndef SRC_SHIFTREG_H_
 #define SRC_SHIFTREG_H_
 
-#define SIZEOFMATR 16
-#define SIZEOFRAWMATR 14
-#define SIZEOFRAWMATR2 10
+#define SIZEOFMATR 16       // Rows and columns the shiftregister is able to display
+#define SIZEOFRAWMATR 14    // LED matrix's columns
+#define SIZEOFRAWMATR2 10   // LED matrix's rows
 
 void shiftreg_init();
 void shiftreg_exec();

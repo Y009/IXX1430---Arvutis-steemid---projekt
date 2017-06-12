@@ -1,4 +1,4 @@
-# IXX1430---Arvutis-steemid---projekt
+# IXX1430---Arvutisysteemid---projekt
 # Breakout game on an LED matrix
 
 

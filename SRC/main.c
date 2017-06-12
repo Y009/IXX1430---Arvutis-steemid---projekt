@@ -8,11 +8,8 @@
 #include "clock.h"
 #include "gpio.h"
 #include "shiftreg.h"
-#include <stdio.h>
 #include "logic.h"
 #include "timer.h"
-
-
 
 int main(void) {
     WDTCTL = WDTPW | WDTHOLD;   // Stop watchdog timer
@@ -21,15 +18,13 @@ int main(void) {
     clkInit();
     shiftreg_init();
     logic_init();
-    timer_init();
 
-    __bis_SR_register(GIE);
+    __bis_SR_register(GIE);     // Enable global interrupts
 
     while(1){
-        logic_cyclic();
         shiftreg_exec();
+        logic_cyclic();
     }
-
 
     return 0;
 }

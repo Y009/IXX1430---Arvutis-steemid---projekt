@@ -38,6 +38,7 @@
 /** \cond IGNORE*/
 void timer_init(void);
 int timer_getCounter(void);
+void set_timerCounter();
 void timer_checkFlag();
 /** \endcond IGNORE*/
 

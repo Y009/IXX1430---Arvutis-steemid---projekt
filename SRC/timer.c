@@ -63,6 +63,16 @@ timer_getCounter(void)
     return interruptCounter;
 }
 
+void
+set_timerCounter()
+/** Get timerA's interruptCounter.
+**
+**  \return interruptCounter
+**/
+{
+    interruptCounter = 0;
+}
+
 //*****************************************************************************
 // Interrupt Service Routines
 //*****************************************************************************

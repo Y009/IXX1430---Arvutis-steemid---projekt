@@ -29,7 +29,7 @@ gpio_init()
 
     GPIO_setAsOutputPin (GPIO_PORT_P3, GPIO_PIN4);     /* Pin 3.4 as output enable for all shiftregisters*/
 
-    GPIO_setAsOutputPin (GPIO_PORT_P2, GPIO_PIN4);     /* Pin 2.2 as  clock for shiftreg */
+    GPIO_setAsOutputPin (GPIO_PORT_P2, GPIO_PIN4);     /* Pin 2.4 as clock for shiftregisters */
 
     // use actual offboard buttons (if so, change btn cnfg)?
     GPIO_setAsInputPinWithPullUpResistor (GPIO_PORT_P1, GPIO_PIN1);     /* Pin 1.1 as Input for on board button */
